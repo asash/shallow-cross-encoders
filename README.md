@@ -22,7 +22,11 @@ To run the code, please install the following dependencies: [pytorch](https://py
 
 
 # Runnign the code
-To train a shallow cross-encoder on the MS-Marco dataset, run 
+Before running the training code, run the 
+
+Before training shallow cross-encoders, run the `bm25ids2tensor.py` script. The script extracts 1000 candidate documents for each query in the MS-MARCO trainset and pre-tokenizes them. This allows not to spend time on 1st stage retrieval during training. 
+
+
 
 ```
 python3 train_shallow_crossencoder.py
@@ -35,5 +39,5 @@ Some useful parameters:
 | --negs           | Number of negatives per positive; defaults to 16                                       |
 
 
-To compare with the baselines run python3 `evaluate_tinybert.py`. When evaluating, make sure that you've replaced the model checkpoints specified in the evaluation code. 
+To compare with the baselines, run python3 with `evaluate_tinybert.py`. When evaluating, make sure that you've replaced the model checkpoints specified in the evaluation code. 
 

@@ -33,3 +33,7 @@ Some useful parameters:
 |------------------|----------------------------------------------------------------------------------------|
 | -t               | Parameter t for the gBCE loss; we recommend to set it to 0.75                          |
 | --negs           | Number of negatives per positive; defaults to 16                                       |
+
+
+To compare with the baselines run python3 `evaluate_tinybert.py`. When evaluating, make sure that you've replaced the model checkpoints specified in the evaluation code. 
+

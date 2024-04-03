@@ -24,6 +24,8 @@ You can install the requirements using pip:
 pip3 install -r requirements.txt
 ```
 
+Note that pyterrier also depends on Java installation and requires the `JAVA_HOME` environment variable to point to the Java installation. 
+
 
 # Preparing data
 Before running the training code, run the 
@@ -45,6 +47,9 @@ Some useful parameters:
 | -t               | Parameter t for the gBCE loss; we recommend to set it to 0.75                          |
 | --negs           | Number of negatives per positive; defaults to 16                                       |
 
+
+# Monitoring training. 
+The training script will spawn Tensorboard on port 26006. During training, you can monitor model metrics in the Tensorbord interface.
 
 To compare with the baselines, run python3 with `evaluate_tinybert.py`. When evaluating, make sure that you've replaced the model checkpoints specified in the evaluation code. 
 

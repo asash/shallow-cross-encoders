@@ -5,6 +5,8 @@ import torch
 from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 import datetime
+import subprocess
+import shlex
 
 from torch.utils.data import DataLoader
 
@@ -13,6 +15,7 @@ import ir_datasets
 from sklearn.model_selection import train_test_split
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import numpy as np
+import socket
 from subprocess import check_call
 
 
@@ -56,7 +59,7 @@ else:
 
 check_call(["mkdir", "-p", output_dir])
 check_call(["mkdir", "-p", tensorboard_dir])
-print("tensorboard --logdir " + os.path.abspath(tensorboard_dir) + " --host 0.0.0.0")
+cmd = "tensorboard --logdir " + os.path.abspath(tensorboard_dir) + " --host 0.0.0.0 --port 26006"
 
 summary_writer = SummaryWriter(tensorboard_dir)
 
@@ -148,6 +151,9 @@ best_model_checkpoint = None
 
 evals_without_improvement = 0
 
+tb_process = subprocess.Popen(shlex.split(cmd))
+print(f"Access tensorboard monitoring at http://{socket.gethostname()}:26006")
+
 for epoch in range(args.max_epochs):
     model.train()
     epoch_steps = min(args.max_batches_per_epoch, len(train_dataloader))
@@ -214,3 +220,4 @@ for epoch in range(args.max_epochs):
             print("evals without improvement: ", evals_without_improvement)
     summary_writer.add_scalar("val/evals_without_improvement", evals_without_improvement, steps)
     summary_writer.add_scalar("val/epochs_to_stop", args.early_stopping - evals_without_improvement, steps)
+tb_process.kill()

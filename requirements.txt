@@ -1,0 +1,8 @@
+torch==2.2.2
+transformers==4.39.3
+python-terrier==0.10.0
+pyterrier_pisa==0.0.6
+ir-datasets==0.5.6
+ir-measures==0.3.3
+tensorboard==2.16.2
+protobuf==4.25.3

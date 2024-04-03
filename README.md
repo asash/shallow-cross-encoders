@@ -18,7 +18,7 @@ Code for the ECIR 2024 paper "Shallow Cross-Encoders for Low-Latency Retrieval".
 
 # Instructions 
 ## Dependencies
-To run the code, please install the following dependencies: [pytorch](https://pytorch.org/), [Hugging Face Transformers](https://huggingface.co/docs/transformers/en/index), [pyterrier](https://pyterrier.readthedocs.io/en/latest/installation.html), [pyterrier-pisa](https://github.com/terrierteam/pyterrier_pisa), [ir-datasets](https://ir-datasets.com/), [ir-measures](https://ir-measur.es/en/latest/)
+To run the code, please install the following dependencies: [pytorch](https://pytorch.org/), [Hugging Face Transformers](https://huggingface.co/docs/transformers/en/index), [pyterrier](https://pyterrier.readthedocs.io/en/latest/installation.html), [pyterrier-pisa](https://github.com/terrierteam/pyterrier_pisa), [ir-datasets](https://ir-datasets.com/), [ir-measures](https://ir-measur.es/en/latest/), [tensorboard](https://www.tensorflow.org/tensorboard)
 
 
 # Preparing data

@@ -48,8 +48,10 @@ Some useful parameters:
 | --negs           | Number of negatives per positive; defaults to 16                                       |
 
 
-# Monitoring training. 
+# Monitoring training
 The training script will spawn Tensorboard on port 26006. During training, you can monitor model metrics in the Tensorbord interface.
+
+# Evaluation
 
 To compare with the baselines, run python3 with `evaluate_tinybert.py`. When evaluating, make sure that you've replaced the model checkpoints specified in the evaluation code. 
 

@@ -21,7 +21,7 @@ Code for the ECIR 2024 paper "Shallow Cross-Encoders for Low-Latency Retrieval".
 To run the code, please install the following dependencies: [pytorch](https://pytorch.org/), [Hugging Face Transformers](https://huggingface.co/docs/transformers/en/index), [pyterrier](https://pyterrier.readthedocs.io/en/latest/installation.html), [pyterrier-pisa](https://github.com/terrierteam/pyterrier_pisa), [ir-datasets](https://ir-datasets.com/), [ir-measures](https://ir-measur.es/en/latest/)
 
 
-# Preeparing data
+# Preparing data
 Before running the training code, run the 
 Before training shallow cross-encoders, run the `bm25ids2tensor.py` script. The script extracts 1000 candidate documents for each query in the MS-MARCO trainset and pre-tokenizes them. This allows not to spend time on 1st stage retrieval during training. 
 

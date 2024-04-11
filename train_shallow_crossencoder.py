@@ -21,6 +21,7 @@ from subprocess import check_call
 
 parser = ArgumentParser()
 parser.add_argument("-t", type=float, default=0.75)
+parser.add_argument("--mask", type=float, default=0)
 parser.add_argument("--negs", type=int, default=16)
 parser.add_argument("--batch-size", type=int, default=32)
 parser.add_argument("--val-batch-size", type=int, default=32)
@@ -84,7 +85,7 @@ all_row_ids = np.arange(len(bm25_preindexed))
 train_rows, val_rows = train_test_split(all_row_ids, test_size=args.val_docs, random_state=31339)
 pass
 
-def batch_tokeniser(rows_ids, max_negatives, mask_percent = None): # batch_size . (max_negativese + 1) x max_len
+def batch_tokeniser(rows_ids, max_negatives, mask_percent = 0): # batch_size . (max_negativese + 1) x max_len
     batch_texts = []
     for row_id  in rows_ids:
         row = bm25_preindexed[row_id]
@@ -98,8 +99,9 @@ def batch_tokeniser(rows_ids, max_negatives, mask_percent = None): # batch_size 
             batch_texts.append([all_queries[qid], dataset.docs.lookup(str(docno)).text])
     batch = tokenizer.batch_encode_plus(batch_texts, return_tensors="pt", padding=True, truncation=True, max_length=512)
     
-    if mask_percent is not None:
-        assert mask_percent >= 0 and mask_percent < 1
+    if mask_percent > 0:
+        assert mask_percent < 1
+        # see https://github.com/huggingface/transformers/blob/main/src/transformers/data/data_collator.py#L782C9-L813
         special_tokens_mask = [
                 tokenizer.get_special_tokens_mask(val, already_has_special_tokens=True) for val in batch.tolist()
         ]
@@ -153,7 +155,7 @@ def validate():
 
 
 train_dataloader = DataLoader(train_rows, batch_size=args.batch_size, 
-                              shuffle=True, num_workers=8, collate_fn=lambda x: batch_tokeniser(x, args.negs))
+                              shuffle=True, num_workers=8, collate_fn=lambda x: batch_tokeniser(x, args.negs, mask_percent = args.mask))
 
 steps = 0
 optimiser = torch.optim.AdamW(model.parameters(), lr=1e-5)

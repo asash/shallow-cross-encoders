@@ -102,19 +102,20 @@ def batch_tokeniser(rows_ids, max_negatives, mask_percent = 0): # batch_size . (
     if mask_percent > 0:
         assert mask_percent < 1
         # see https://github.com/huggingface/transformers/blob/main/src/transformers/data/data_collator.py#L782C9-L813
+        # TODO how to separate query from doc?
         special_tokens_mask = [
-                tokenizer.get_special_tokens_mask(val, already_has_special_tokens=True) for val in batch.tolist()
+                tokenizer.get_special_tokens_mask(val, already_has_special_tokens=True) for val in batch['input_ids'].tolist()
         ]
         special_tokens_mask = torch.tensor(special_tokens_mask, dtype=torch.bool)
-        probability_matrix = torch.full(batch.shape, mask_percent)
+        probability_matrix = torch.full(batch['input_ids'].shape, mask_percent)
         probability_matrix.masked_fill_(special_tokens_mask, value=0.0)
         masked_indices = torch.bernoulli(probability_matrix).bool()
-        batch[~masked_indices] = -100  # We only compute loss on masked tokens
+        batch['input_ids'][masked_indices] = tokenizer.mask_token_id # TODO: check this behaves as expected
       
     return batch
 
 
-val_dataloader = DataLoader(val_rows, batch_size=args.val_batch_size,num_workers=4,
+val_dataloader = DataLoader(val_rows, batch_size=args.val_batch_size, #num_workers=1,
                             shuffle=False,
                             collate_fn=lambda x : batch_tokeniser(x, args.val_negs))
 
@@ -155,7 +156,8 @@ def validate():
 
 
 train_dataloader = DataLoader(train_rows, batch_size=args.batch_size, 
-                              shuffle=True, num_workers=8, collate_fn=lambda x: batch_tokeniser(x, args.negs, mask_percent = args.mask))
+                              shuffle=True, # num_workers=1, 
+                              collate_fn=lambda x: batch_tokeniser(x, args.negs, mask_percent = args.mask))
 
 steps = 0
 optimiser = torch.optim.AdamW(model.parameters(), lr=1e-5)

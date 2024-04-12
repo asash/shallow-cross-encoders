@@ -28,8 +28,7 @@ Note that pyterrier also depends on Java installation and requires the `JAVA_HOM
 
 
 # Preparing data
-Before running the training code, run the 
-Before training shallow cross-encoders, run the `bm25ids2tensor.py` script. The script extracts 1000 candidate documents for each query in the MS-MARCO trainset and pre-tokenizes them. This allows not to spend time on 1st stage retrieval during training. 
+Before training shallow cross-encoders, run the `bm25ids2tensor.py` setup script. The script extracts the 1000 BM25 candidate documents for each query in the MS-MARCO trainset and pre-tokenizes them. This allows not to spend time on 1st stage retrieval during training. 
 
 
 

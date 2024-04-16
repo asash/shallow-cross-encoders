@@ -53,7 +53,6 @@ if args.tensorboard_dir is not None:
     tensorboard_dir = args.tensorboard_dir
 else:
     tensorboard_dir = "output/" + run_id + "/tensorboard"
-    
 
 
 check_call(["mkdir", "-p", output_dir])
@@ -96,8 +95,7 @@ def batch_tokeniser(rows_ids, max_negatives, mask_percent = 0): # batch_size . (
         for docno in query_docs:
             batch_texts.append([all_queries[qid], dataset.docs.lookup(str(docno)).text])
     batch = tokenizer.batch_encode_plus(batch_texts, return_tensors="pt", padding=True, truncation=True, max_length=512, return_special_tokens_mask=True)
-    special_tokens_mask = batch.pop('special_tokens_mask')
-    
+    special_tokens_mask = batch.pop('special_tokens_mask').bool()
     if mask_percent > 0:
         assert mask_percent < 1
         # see https://github.com/huggingface/transformers/blob/main/src/transformers/data/data_collator.py#L782C9-L813
@@ -106,7 +104,6 @@ def batch_tokeniser(rows_ids, max_negatives, mask_percent = 0): # batch_size . (
         probability_matrix.masked_fill_(special_tokens_mask, value=0.0)
         masked_indices = torch.bernoulli(probability_matrix).bool()
         batch['input_ids'][masked_indices] = tokenizer.mask_token_id # TODO: check this behaves as expected
-      
     return batch
 
 
@@ -114,7 +111,7 @@ val_dataloader = DataLoader(val_rows, batch_size=args.val_batch_size, #num_worke
                             shuffle=False,
                             collate_fn=lambda x : batch_tokeniser(x, args.val_negs))
 
-val_batches = defaultdict(list) 
+val_batches = defaultdict(list)
 print("loading val data...")
 for batch in tqdm(val_dataloader):
     for key in batch:
@@ -181,7 +178,6 @@ for epoch in range(args.max_epochs):
         negatives_log_one_minus_probs = class_logprobs[:,1:,0]
         negative_probs = class_logprobs[:,1:,1].exp()
         false_positives_rate = torch.mean((negative_probs > 0.9).to(torch.float))
-        
         mean_negative_prob = torch.mean(negative_probs)
         all_logprobs = torch.cat([positive_logprobs, negatives_log_one_minus_probs], dim=1)
         loss = -torch.mean(all_logprobs)
@@ -192,7 +188,6 @@ for epoch in range(args.max_epochs):
             param_norm = p.grad.data.norm(2)
             total_norm += param_norm.item() ** 2
         total_norm = total_norm ** (1. / 2)
-            
         optimiser.step()
         optimiser.zero_grad()
         summary_writer.add_scalar("train/loss", loss.item(), steps)
@@ -200,7 +195,6 @@ for epoch in range(args.max_epochs):
         summary_writer.add_scalar("train/mean_negative_prob", mean_negative_prob.item(), steps)
         summary_writer.add_scalar("train/grad_norm", total_norm, steps)
         summary_writer.add_scalar("train/false_positives_rate", false_positives_rate.item(), steps)
-        
         loss_hist.append(loss.item())
         pbar.update(1)
         pbar.set_description(f"loss: {np.mean(loss_hist):.6f}")
@@ -215,7 +209,7 @@ for epoch in range(args.max_epochs):
         best_val_ndcg = val_ndcg
         new_best_checkpoint = output_dir  + f"/epoch:{epoch}-val_ndcg:{val_ndcg:.6f}"
         model.save_pretrained(new_best_checkpoint)
-        evals_without_improvement = 0 
+        evals_without_improvement = 0
         #remove old best checkpoint
         if best_model_checkpoint is not None:
             check_call(["rm", "-rf", best_model_checkpoint])

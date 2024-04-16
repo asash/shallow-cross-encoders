@@ -97,16 +97,13 @@ def batch_tokeniser(rows_ids, max_negatives, mask_percent = 0): # batch_size . (
         query_docs = np.concatenate([positive, negatives])
         for docno in query_docs:
             batch_texts.append([all_queries[qid], dataset.docs.lookup(str(docno)).text])
-    batch = tokenizer.batch_encode_plus(batch_texts, return_tensors="pt", padding=True, truncation=True, max_length=512)
+    batch = tokenizer.batch_encode_plus(batch_texts, return_tensors="pt", padding=True, truncation=True, max_length=512, return_special_tokens_mask=True)
+    special_tokens_mask = batch.pop('special_tokens_mask')
     
     if mask_percent > 0:
         assert mask_percent < 1
         # see https://github.com/huggingface/transformers/blob/main/src/transformers/data/data_collator.py#L782C9-L813
         # TODO how to separate query from doc?
-        special_tokens_mask = [
-                tokenizer.get_special_tokens_mask(val, already_has_special_tokens=True) for val in batch['input_ids'].tolist()
-        ]
-        special_tokens_mask = torch.tensor(special_tokens_mask, dtype=torch.bool)
         probability_matrix = torch.full(batch['input_ids'].shape, mask_percent)
         probability_matrix.masked_fill_(special_tokens_mask, value=0.0)
         masked_indices = torch.bernoulli(probability_matrix).bool()

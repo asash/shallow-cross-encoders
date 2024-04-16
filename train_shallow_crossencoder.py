@@ -34,15 +34,13 @@ parser.add_argument("--early-stopping", type=int, default=200)
 parser.add_argument("--run-id", type=str, default=None)
 parser.add_argument("--output-dir", type=str, default=None)
 parser.add_argument("--tensorboard-dir", type=str, default=None)
-                    
-                    
 
 
 args = parser.parse_args()
 
 run_time = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 if args.run_id is None:
-    run_id  = f"crossencoder-{args.backbone_model.replace('/', '-')}-gbce-{args.negs}-{args.t}-{args.batch_size}-{run_time}"
+    run_id  = f"crossencoder-{args.backbone_model.replace('/', '-')}-gbce-{args.negs}-{args.t}-{args.batch_size}-{run_time}-mask-{args.mask:.2f}"
 else:
     run_id = args.run_id
 

@@ -19,6 +19,6 @@ os.makedirs(tb_dir, exist_ok=True)
 for mask in masks:
     mask_tb_dir = tb_dir / f"mask_{mask:.2f}"
     mask_out_dir = out_dir / f"mask_{mask:.2f}"
-    cmd = f"python train_shallow_crossencoder.py --mask {mask:.2f} --output-dir {mask_tb_dir} --tensorboard-dir {mask_out_dir}"
+    cmd = f"python train_shallow_crossencoder.py --mask {mask:.2f} --output-dir {mask_out_dir} --tensorboard-dir {mask_tb_dir}"
     print(cmd)
     subprocess.check_call(shlex.split(cmd))
